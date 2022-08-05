@@ -1,0 +1,95 @@
+<form id="duplicate_ticket" >
+    <!-- Desenvolvido por: Mateus Costa https://www.linkedin.com/in/costamateus6/ -->
+    <span>CPF</span>
+    <input type="text"   name="cpf"       id="cpf"          >
+    <input type="submit" name="solicitar" value="Solicitar" >
+</form>
+<div>
+    <!-- Desenvolvido por: Mateus Costa https://www.linkedin.com/in/costamateus6/ -->
+    <p id="b_msg"   class="np-mt-5" ></p>
+    <p id="b_code"  class="np-mt-5 np-mb-5" ></p>
+    <p id="b_date"  class="np-mb-5"></p>
+    <p id="b_value" class="np-mb-5"></p>
+    <div id="url"   class="np-text-center np-d-none" >
+        <a id="b_url" class="np-mb-5 np-w-100 elementor-button-link elementor-button" target="_blank" ></a>
+    </div>
+</div>
+<div id="b_load" >
+    <div id="bg_load" >
+        <div id="gif_load" ></div>
+    </div>
+</div>
+<style>
+    .np-mb-5        { margin-bottom:.5rem; }
+    .np-mt-5        { margin-top:1.5rem;   }
+    .np-w-100       { width: 100%;         }
+    .np-d-none      { display: none;       }
+    .np-text-center { text-align:center;   }
+    #b_load         { top:0; left:0; width:100vw; height:100vh; overflow:auto; position:fixed; z-index:99999991; background-color:rgba(0,0,0,0.3); display:none; }
+    #bg_load        { top:50%; left:50%; margin:0; position:fixed; transform:translate(-50%,-50%); }
+    #gif_load       { width:60px; height:60px; margin:0 auto; border:5px solid #C9FF33; border-top:5px solid #1E334A; border-radius:50%; -webkit-animation:spin 1s linear infinite; animation:spin 1s linear infinite; }
+    @-webkit-keyframes spin { 0% { -webkit-transform: rotate(0deg); } 100% { -webkit-transform: rotate(360deg); } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* Desenvolvido por: Mateus Costa https://www.linkedin.com/in/costamateus6/ */
+</style>
+
+<script>
+    // Desenvolvido por: Mateus Costa https://www.linkedin.com/in/costamateus6/
+    ( function ( $ ) {
+        "use strict";
+        console.log("%c Desenvolvido por: Mateus Costa ", "background:#000; color:#FFFF00; font-size:16px");
+        console.log("%c https://www.linkedin.com/in/costamateus6/ ", "font-size:16px");
+
+        $( "#duplicate_ticket" ).on( "submit", function() {
+            $( "#b_load"  ).show();
+            $( "#b_msg"   ).html( "" );
+            $( "#b_code"  ).html( "" );
+            $( "#b_date"  ).html( "" );
+            $( "#b_value" ).html( "" );
+            $( "#b_url"   ).html( "" ).attr( "href", "" );
+            $( "#url"     ).addClass( "np-d-none" );
+
+            $.ajax( {
+                url : "/wp-admin/admin-ajax.php",
+                type: "POST",
+                data: {
+                    action : "duplicate_ticket",
+                    cpf    : $( "#cpf" ).val(),
+                },
+                success: function( data ) {
+
+                    let result = JSON.parse( data );
+                    console.log( result );
+
+                    if ( result.success == "false" && result.codigo == "404" )
+                    {
+                        $( "#b_msg" ).html( result.msg );
+                    }
+                    else if ( result.success == "false" )
+                    {
+                        $( "#b_msg" ).html( "Houve um erro. Recarregue aágina e tente novamente." );
+                    }
+                    else
+                    {
+                        $( "#b_code"  ).html( "<b>Código</b>: "     + result.data.code  );
+                        $( "#b_date"  ).html( "<b>Vencimento</b>: " + result.data.date  );
+                        $( "#b_value" ).html( "<b>Valor</b>: R$ "   + result.data.value );
+                        $( "#b_url"   ).html( "Clique aqui para baixar o boleto" ).attr( "href", result.data.url );
+                        $( "#url"     ).removeClass( "np-d-none" );
+                    }
+
+                    $( "#b_load" ).hide();
+                },
+                error: function( err ) {
+                    $( "#b_msg"  ).html( "Houve um erro. Recarregue aágina e tente novamente." );
+                    $( "#b_load" ).hide();
+                }
+            } );
+
+            return false;
+        } );
+
+        // Desenvolvido por: Mateus Costa https://www.linkedin.com/in/costamateus6/
+    } )( jQuery );
+
+</script>
